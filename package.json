@@ -1,0 +1,26 @@
+{
+  "name": "node.js_homeworks",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "dev": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AlonaHarnyk/node.js_homeworks.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/AlonaHarnyk/node.js_homeworks/issues"
+  },
+  "homepage": "https://github.com/AlonaHarnyk/node.js_homeworks#readme",
+  "devDependencies": {
+    "nodemon": "^2.0.4"
+  },
+  "dependencies": {
+    "yargs": "^15.3.1"
+  }
+}
