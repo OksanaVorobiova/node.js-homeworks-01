@@ -43,7 +43,7 @@ function removeContact(req, res) {
       const updatedData = JSON.stringify(data.filter(({id}) => id !== Number(req.params.contactId)), null, 2)
       writeDataToDb(updatedData);
       const contact = data.find(({id}) => id === Number(req.params.contactId));
-      if (contact) {res.status(400).json({"message": "contact deleted"})}
+      if (contact) {res.status(200).json({"message": "contact deleted"})}
       else {res.status(404).json({"message": "Not found"})}
   })
   .catch((error) => {throw error});
