@@ -1,75 +1,67 @@
-const readDataFromDb = require("../helpers/readDataFromDB");
-const writeDataToDb = require('../helpers/writeDataToDB');
-const validateClientdata = require("../helpers/validateClientData");
+import Contact from "../models/contactsModel";
 
-function listContacts(req, res) {
-  readDataFromDb()
-    .then((data) => {res.status(200).send(data)})
-    .catch((error) => {throw error});
-}
+export const listContacts = async (req, res) => {
+  try {
+    const contacts = await Contact.listContacts();
+    res.status(200).send(contacts);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
+};
 
-function getContactById(req, res) {
-  readDataFromDb()
-    .then((data) => {const contact = data.find(({id}) => id === Number(req.params.contactId));
-      if (!contact) {res.status(404).json({"message": "Not found"})}
-      res.status(200).send(contact);
-    })
-    .catch((error) => {throw error});
-}
+export const getContactById = async (req, res) => {
+  try {
+    const contact = await Contact.getContactById(req.params.contactId);
+    if (!contact) {
+      res.status(404).send({
+        message: "Not found",
+      });
+    }
+    res.status(200).send(contact);
+  } catch (error) {
+    console.log(error);
+    res.status(500).send("Server error");
+  }
+};
 
-function addContact(req, res) {
-  const result = validateClientdata(req, res);
-  if (result.error) {res.status(400).json({"message": `missing required ${result.error.details[0].context.key} field`})}
-  else {
-    const newContact = {
-      id: Date.now(),
-      name: req.body.name,
-      email: req.body.email,
-      phone: req.body.phone,
-    };
-    readDataFromDb()
-      .then((data) => {
-        const updatedData = JSON.stringify([...data, newContact], null, 2);
-        writeDataToDb(updatedData);
-      })
-      .catch((error) => {throw error});
+export const addContact = async (req, res) => {
+  try {
+    const newContact = await Contact.addContact(req.body);
     res.status(201).send(newContact);
+  } catch (error) {
+    res.status(500).send("Server error");
   }
-}
+};
 
-function removeContact(req, res) {
-  readDataFromDb()
-    .then((data) => {
-      const updatedData = JSON.stringify(data.filter(({id}) => id !== Number(req.params.contactId)), null, 2)
-      writeDataToDb(updatedData);
-      const contact = data.find(({id}) => id === Number(req.params.contactId));
-      if (contact) {res.status(200).json({"message": "contact deleted"})}
-      else {res.status(404).json({"message": "Not found"})}
-  })
-  .catch((error) => {throw error});
-}
-
-function updateContact(req, res) {
-  if (req.body.constructor === Object && Object.keys(req.body).length === 0) {res.status(400).json({"message": "missing fields"})}
-  else {
-    readDataFromDb()
-    .then((data) => {
-        const contact = data.find(({id}) => id === Number(req.params.contactId));
-        if(contact) {
-          const updatedContact = Object.assign(contact, req.body)
-          const dataWithoutEdittedcontact = data.filter(({id}) => id !== Number(req.params.contactId));
-          writeDataToDb(JSON.stringify([...dataWithoutEdittedcontact, updatedContact], null, 2));
-          res.status(200).send(updatedContact);
-        } else {res.status(404).json({"message": "Not found"})}
-    })
-  .catch((error) => {throw error});
+export const removeContact = async (req, res) => {
+  try {
+    const contact = await Contact.removeContact(req.params.contactId);
+    if (!contact) {
+      res.status(404).json({
+        message: "Not found",
+      });
+    }
+    res.status(200).json({
+      message: "contact deleted",
+    });
+  } catch (error) {
+    res.status(500).send("Server error");
   }
-}
+};
 
-module.exports = {
-  listContacts,
-  getContactById,
-  addContact,
-  removeContact,
-  updateContact
+export const updateContact = async (req, res) => {
+  try {
+    const updatedContact = await Contact.updateContact(
+      req.params.contactId,
+      req.body
+    );
+    if (!updatedContact) {
+      res.status(404).json({
+        message: "Not found",
+      });
+    }
+    res.status(201).send(updatedContact);
+  } catch (error) {
+    res.status(500).send("Server error");
+  }
 };
