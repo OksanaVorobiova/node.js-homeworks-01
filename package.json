@@ -18,7 +18,7 @@
   },
   "homepage": "https://github.com/AlonaHarnyk/node.js_homeworks#readme",
   "devDependencies": {
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.20"
   },
   "dependencies": {
     "@hapi/joi": "^17.1.1",
